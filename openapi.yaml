@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: API de Jogos Favoritos
+  version: 1.0.0
+  description: API para gerenciamento de jogos favoritos dos usuários.
+
+servers:
+  - url: https://api.exemplo.com
+
+paths:
+  /games:
+    get:
+      summary: Lista todos os jogos
+      operationId: listGames
+      responses:
+        '200':
+          description: Lista de jogos retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+
+    post:
+      summary: Cadastra um novo jogo
+      operationId: createGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameInput'
+
+      responses:
+        '201':
+          description: Jogo criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+
+        '400':
+          description: Dados inválidos
+
+  /games/{id}:
+    get:
+      summary: Busca um jogo por ID
+      operationId: getGameById
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do jogo
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Jogo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+
+        '404':
+          description: Jogo não encontrado
+
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        genero:
+          type: string
+        plataforma:
+          type: string
+
+    GameInput:
+      type: object
+      required:
+        - nome
+        - genero
+      properties:
+        nome:
+          type: string
+        genero:
+          type: string
+        plataforma:
+          type: string
