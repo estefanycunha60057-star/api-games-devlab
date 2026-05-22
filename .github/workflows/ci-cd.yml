@@ -1,4 +1,4 @@
-name: CI/CD API Docs
+name: Documentação da API de CI/CD
 
 on:
   push:
@@ -19,10 +19,14 @@ jobs:
           node-version: 18
 
       - name: Instalar Spectral
-        run: npm install -g @stoplight/spectral-cli
+        run: npm install -g @stoplight/spectral-cli @stoplight/spectral-rulesets
+
+      - name: Criar ruleset
+        run: |
+          echo 'extends: ["spectral:oas"]' > .spectral.yaml
 
       - name: Validar OpenAPI
-        run: spectral lint openapi.yaml --ruleset "https://unpkg.com/@stoplight/spectral-rulesets/dist/oas/index.js"
+        run: spectral lint openapi.yaml
 
   publicar-docs:
     needs: validar
@@ -32,11 +36,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gerar HTML
+      - name: Gerar documentação HTML
         run: |
-          npx redoc-cli build openapi.yaml -o index.html
+          npm install -g redoc-cli
+          redoc-cli build openapi.yaml -o index.html
 
-      - name: Publicar GitHub Pages
+      - name: Publicar no GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
